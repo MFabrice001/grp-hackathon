@@ -1,6 +1,6 @@
 # 🇷🇼 Rwanda GRB Resource Discovery Platform
-**Team Name:** [Insert Your Team Name Here]
-**Repository:** `team-[name]-gdrh-2026`
+**Name:** Musengimana Fabrice
+**Repository:** `Musengimana Fabrice-grp-hackathon`
 
 ## 🎯 Project Objective
 To bridge the data visibility gap for Civil Society Organizations (CSOs) in Rwanda by providing a centralized, searchable, and AI-powered catalog of Gender Responsive Budgeting (GRB) resources, datasets, and surveys.
