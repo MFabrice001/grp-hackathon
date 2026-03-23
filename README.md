@@ -1,5 +1,7 @@
 # 🇷🇼 Rwanda GRB Resource Discovery Platform
 **Name:** Musengimana Fabrice
+**Name:** Uwayo Parfait
+
 **Repository:** `Musengimana Fabrice-grp-hackathon`
 
 ## 🎯 Project Objective
