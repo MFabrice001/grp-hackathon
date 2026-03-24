@@ -28,38 +28,507 @@ st.set_page_config(
 # ── Custom CSS ────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-  section[data-testid="stSidebar"] { background: #1a1a2e; }
+  /* ═══════════════════════════════════════════════════
+     FONTS
+  ═══════════════════════════════════════════════════ */
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
 
-  .resource-card {
-    background: #16213e;
-    border: 1px solid #0f3460;
-    border-radius: 10px;
-    padding: 16px;
-    margin-bottom: 12px;
+  /* ═══════════════════════════════════════════════════
+     CSS VARIABLES
+  ═══════════════════════════════════════════════════ */
+  :root {
+    --bg-void:        #060d14;
+    --bg-deep:        #0b1724;
+    --bg-card:        #0f1f30;
+    --bg-card-hover:  #132436;
+    --bg-sidebar:     #080f18;
+    --border-subtle:  rgba(255,255,255,0.06);
+    --border-accent:  rgba(226,185,111,0.35);
+    --gold:           #e2b96f;
+    --gold-light:     #f0cf99;
+    --gold-dim:       rgba(226,185,111,0.12);
+    --teal:           #2dbeaa;
+    --teal-dim:       rgba(45,190,170,0.12);
+    --blue-mid:       #3b82f6;
+    --text-primary:   #e8edf3;
+    --text-secondary: #8a9ab0;
+    --text-muted:     #4a5a6e;
+    --success-bg:     rgba(6,95,70,0.75);
+    --success-fg:     #6ee7b7;
+    --danger-bg:      rgba(127,29,29,0.75);
+    --danger-fg:      #fca5a5;
+    --warn-bg:        rgba(120,53,15,0.75);
+    --warn-fg:        #fcd34d;
+    --radius-sm:      8px;
+    --radius-md:      14px;
+    --radius-lg:      20px;
+    --shadow-card:    0 2px 20px rgba(0,0,0,0.45), 0 1px 0 rgba(255,255,255,0.03) inset;
+    --shadow-hover:   0 8px 40px rgba(0,0,0,0.55), 0 0 0 1px rgba(226,185,111,0.22);
+    --shadow-gold:    0 0 24px rgba(226,185,111,0.18);
+    --font-display:   'DM Serif Display', Georgia, serif;
+    --font-body:      'DM Sans', system-ui, sans-serif;
+    --transition:     0.28s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .resource-card h4 { color: #e2b96f; margin: 0 0 6px; font-size: 15px; }
-  .resource-card p  { color: #9ca3af; font-size: 13px; margin: 0; }
 
-  .badge-open       { background:#065f46; color:#6ee7b7; padding:2px 10px;
-                      border-radius:999px; font-size:11px; font-weight:600; }
-  .badge-restricted { background:#7f1d1d; color:#fca5a5; padding:2px 10px;
-                      border-radius:999px; font-size:11px; font-weight:600; }
-  .badge-flag       { background:#78350f; color:#fcd34d; padding:2px 10px;
-                      border-radius:999px; font-size:11px; font-weight:600; }
-
-  .brief-box {
-    background: #0d1b2a;
-    border-left: 4px solid #e2b96f;
-    border-radius: 0 8px 8px 0;
-    padding: 20px;
-    margin-top: 16px;
+  /* ═══════════════════════════════════════════════════
+     BASE & GLOBAL RESETS
+  ═══════════════════════════════════════════════════ */
+  html, body, .stApp {
+    font-family: var(--font-body) !important;
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: var(--text-primary);
   }
 
+  .stApp {
+    background-color: var(--bg-void) !important;
+    background-image:
+      radial-gradient(ellipse 70% 50% at 20% 0%, rgba(45,190,170,0.055) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 80% 100%, rgba(226,185,111,0.045) 0%, transparent 55%),
+      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.012'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg-void); }
+  ::-webkit-scrollbar-thumb { background: rgba(226,185,111,0.25); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(226,185,111,0.45); }
+
+  #MainMenu, footer, header { visibility: hidden; }
+  .block-container {
+    padding: 2rem 2.5rem 4rem !important;
+    max-width: 1440px !important;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     SIDEBAR
+  ═══════════════════════════════════════════════════ */
+  section[data-testid="stSidebar"] {
+    background-color: var(--bg-sidebar) !important;
+    background-image:
+      linear-gradient(180deg, rgba(226,185,111,0.04) 0%, transparent 40%),
+      repeating-linear-gradient(
+        0deg, transparent, transparent 48px,
+        rgba(255,255,255,0.015) 48px, rgba(255,255,255,0.015) 49px
+      );
+    border-right: 1px solid var(--border-subtle) !important;
+  }
+  section[data-testid="stSidebar"] .block-container { padding: 1.5rem 1.25rem !important; }
+  section[data-testid="stSidebar"] h2 {
+    font-family: var(--font-display) !important;
+    font-size: 19px !important;
+    color: var(--gold) !important;
+    letter-spacing: 0.4px;
+    margin-bottom: 0.25rem !important;
+  }
+  section[data-testid="stSidebar"] label,
+  section[data-testid="stSidebar"] .stMarkdown p {
+    font-size: 12.5px !important;
+    color: var(--text-secondary) !important;
+    letter-spacing: 0.3px;
+  }
+  section[data-testid="stSidebar"] hr {
+    border-color: var(--border-subtle) !important;
+    margin: 1rem 0 !important;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     PAGE HEADINGS
+  ═══════════════════════════════════════════════════ */
+  h1, h2, h3 {
+    font-family: var(--font-display) !important;
+    letter-spacing: 0.2px;
+    color: var(--text-primary) !important;
+  }
+  h1 { font-size: 2rem !important; }
+  h2 { font-size: 1.55rem !important; }
+  h3 { font-size: 1.15rem !important; }
+
+  /* ═══════════════════════════════════════════════════
+     TABS
+  ═══════════════════════════════════════════════════ */
+  .stTabs [data-baseweb="tab-list"] {
+    gap: 4px !important;
+    background: rgba(255,255,255,0.025) !important;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    padding: 6px 6px 0 !important;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .stTabs [data-baseweb="tab"] {
+    background: transparent !important;
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0 !important;
+    padding: 10px 20px !important;
+    font-family: var(--font-body) !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: var(--text-muted) !important;
+    transition: color var(--transition), background var(--transition) !important;
+    border: none !important;
+  }
+  .stTabs [data-baseweb="tab"]:hover {
+    color: var(--text-secondary) !important;
+    background: rgba(255,255,255,0.04) !important;
+  }
+  .stTabs [aria-selected="true"] {
+    color: var(--gold) !important;
+    font-weight: 600 !important;
+    background: rgba(226,185,111,0.07) !important;
+  }
+  .stTabs [data-baseweb="tab-highlight"] {
+    background: linear-gradient(90deg, var(--gold), var(--gold-light)) !important;
+    height: 2px !important;
+    border-radius: 2px 2px 0 0 !important;
+  }
+  .stTabs [data-baseweb="tab-panel"] {
+    background: rgba(255,255,255,0.018) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-top: none !important;
+    border-radius: 0 0 var(--radius-md) var(--radius-md) !important;
+    padding: 2rem !important;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     METRIC CARDS
+  ═══════════════════════════════════════════════════ */
   div[data-testid="metric-container"] {
-    background:#16213e;
-    border:1px solid #0f3460;
-    border-radius:8px;
-    padding:12px;
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: var(--radius-md) !important;
+    padding: 20px 22px !important;
+    box-shadow: var(--shadow-card) !important;
+    position: relative;
+    overflow: hidden;
+    transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition) !important;
+  }
+  div[data-testid="metric-container"]::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(226,185,111,0.4), transparent);
+  }
+  div[data-testid="metric-container"]:hover {
+    transform: translateY(-3px) !important;
+    border-color: var(--border-accent) !important;
+    box-shadow: var(--shadow-hover) !important;
+  }
+  div[data-testid="metric-container"] [data-testid="stMetricLabel"] {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.9px !important;
+    text-transform: uppercase !important;
+    color: var(--text-muted) !important;
+  }
+  div[data-testid="metric-container"] [data-testid="stMetricValue"] {
+    font-family: var(--font-display) !important;
+    font-size: 28px !important;
+    color: var(--text-primary) !important;
+    line-height: 1.2 !important;
+  }
+  div[data-testid="metric-container"] [data-testid="stMetricDelta"] {
+    font-size: 11.5px !important;
+    color: var(--teal) !important;
+    font-weight: 500 !important;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     RESOURCE CARDS
+  ═══════════════════════════════════════════════════ */
+  .resource-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 22px 24px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow-card);
+    position: relative;
+    overflow: hidden;
+    transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+  }
+  .resource-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: linear-gradient(180deg, var(--gold) 0%, var(--teal) 100%);
+    border-radius: 3px 0 0 3px;
+    opacity: 0;
+    transition: opacity var(--transition);
+  }
+  .resource-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(226,185,111,0.2) 50%, transparent 100%);
+  }
+  .resource-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+    border-color: rgba(226,185,111,0.28);
+    background: var(--bg-card-hover);
+  }
+  .resource-card:hover::before { opacity: 1; }
+  .resource-card h4 {
+    color: var(--gold) !important;
+    margin: 0 0 10px !important;
+    font-family: var(--font-display) !important;
+    font-size: 16.5px !important;
+    font-weight: 400 !important;
+    letter-spacing: 0.2px;
+    line-height: 1.35;
+  }
+  .resource-card p {
+    color: var(--text-secondary) !important;
+    font-size: 13px !important;
+    margin: 0 !important;
+    line-height: 1.6 !important;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     BADGES
+  ═══════════════════════════════════════════════════ */
+  .badge-open {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--success-bg); color: var(--success-fg);
+    padding: 3px 11px 3px 9px; border-radius: 999px;
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px;
+    border: 1px solid rgba(110,231,183,0.2);
+    box-shadow: 0 0 10px rgba(110,231,183,0.12), 0 0 0 1px rgba(110,231,183,0.08) inset;
+  }
+  .badge-restricted {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--danger-bg); color: var(--danger-fg);
+    padding: 3px 11px 3px 9px; border-radius: 999px;
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px;
+    border: 1px solid rgba(252,165,165,0.2);
+    box-shadow: 0 0 10px rgba(252,165,165,0.1), 0 0 0 1px rgba(252,165,165,0.08) inset;
+  }
+  .badge-flag {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--warn-bg); color: var(--warn-fg);
+    padding: 3px 11px 3px 9px; border-radius: 999px;
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px;
+    border: 1px solid rgba(252,211,77,0.2);
+    box-shadow: 0 0 10px rgba(252,211,77,0.1), 0 0 0 1px rgba(252,211,77,0.08) inset;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     AI POLICY BRIEF BOX
+  ═══════════════════════════════════════════════════ */
+  .brief-box {
+    background: linear-gradient(135deg, rgba(226,185,111,0.04) 0%, transparent 50%), var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    padding: 28px 32px;
+    margin-top: 20px;
+    box-shadow: var(--shadow-card);
+    line-height: 1.75;
+    position: relative;
+  }
+  .brief-box::before {
+    content: '"';
+    position: absolute;
+    top: 12px; left: 18px;
+    font-family: var(--font-display);
+    font-size: 56px;
+    color: rgba(226,185,111,0.12);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     BUTTONS
+  ═══════════════════════════════════════════════════ */
+  div.stButton > button {
+    font-family: var(--font-body) !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.4px !important;
+    border-radius: var(--radius-sm) !important;
+    padding: 10px 20px !important;
+    transition: all var(--transition) !important;
+  }
+  div.stButton > button[kind="primary"] {
+    background: linear-gradient(135deg, var(--gold) 0%, #c9a45e 100%) !important;
+    color: #0b1724 !important;
+    font-weight: 700 !important;
+    border: none !important;
+    box-shadow: 0 4px 16px rgba(226,185,111,0.3), 0 1px 0 rgba(255,255,255,0.15) inset !important;
+  }
+  div.stButton > button[kind="primary"]:hover {
+    background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 100%) !important;
+    box-shadow: 0 6px 24px rgba(226,185,111,0.45) !important;
+    transform: translateY(-1px) !important;
+  }
+  div.stButton > button[kind="primary"]:active {
+    transform: translateY(0) !important;
+  }
+  div.stDownloadButton > button {
+    font-family: var(--font-body) !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.4px !important;
+    background: rgba(255,255,255,0.04) !important;
+    color: var(--text-secondary) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: var(--radius-sm) !important;
+    padding: 10px 20px !important;
+    transition: all var(--transition) !important;
+  }
+  div.stDownloadButton > button:hover {
+    background: rgba(255,255,255,0.08) !important;
+    border-color: var(--border-accent) !important;
+    color: var(--gold) !important;
+    transform: translateY(-1px) !important;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     INPUTS
+  ═══════════════════════════════════════════════════ */
+  div[data-testid="stTextInput"] input {
+    background: rgba(255,255,255,0.04) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: var(--radius-sm) !important;
+    color: var(--text-primary) !important;
+    font-family: var(--font-body) !important;
+    font-size: 13.5px !important;
+    padding: 10px 14px !important;
+    transition: border-color var(--transition), box-shadow var(--transition) !important;
+  }
+  div[data-testid="stTextInput"] input:focus {
+    border-color: rgba(226,185,111,0.5) !important;
+    box-shadow: 0 0 0 3px rgba(226,185,111,0.1) !important;
+    background: rgba(255,255,255,0.06) !important;
+  }
+  div[data-testid="stTextInput"] input::placeholder { color: var(--text-muted) !important; }
+  div[data-testid="stSelectbox"] > div > div {
+    background: rgba(255,255,255,0.04) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: var(--radius-sm) !important;
+    color: var(--text-primary) !important;
+  }
+  div[data-testid="stSelectbox"] > div > div:hover {
+    border-color: var(--border-accent) !important;
+    background: rgba(255,255,255,0.07) !important;
+  }
+  div[data-testid="stChatInput"] textarea {
+    background: rgba(255,255,255,0.04) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: var(--radius-md) !important;
+    color: var(--text-primary) !important;
+    font-family: var(--font-body) !important;
+  }
+  div[data-testid="stChatInput"] textarea:focus {
+    border-color: rgba(226,185,111,0.45) !important;
+    box-shadow: 0 0 0 3px rgba(226,185,111,0.08) !important;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     ALERTS
+  ═══════════════════════════════════════════════════ */
+  div[data-testid="stAlert"] {
+    border-radius: var(--radius-md) !important;
+    border: 1px solid var(--border-subtle) !important;
+    font-size: 13px !important;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     EXPANDER
+  ═══════════════════════════════════════════════════ */
+  details[data-testid="stExpander"] {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: var(--radius-md) !important;
+    overflow: hidden;
+  }
+  details[data-testid="stExpander"]:hover { border-color: var(--border-accent) !important; }
+  details[data-testid="stExpander"] summary {
+    background: rgba(255,255,255,0.025) !important;
+    padding: 14px 18px !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    color: var(--text-secondary) !important;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+  }
+  details[data-testid="stExpander"] summary:hover { color: var(--gold) !important; }
+  details[data-testid="stExpander"] > div { padding: 16px 18px !important; }
+
+  /* ═══════════════════════════════════════════════════
+     DATAFRAME
+  ═══════════════════════════════════════════════════ */
+  div[data-testid="stDataFrame"] {
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: var(--radius-md) !important;
+    overflow: hidden !important;
+    box-shadow: var(--shadow-card) !important;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     CHAT MESSAGES
+  ═══════════════════════════════════════════════════ */
+  div[data-testid="stChatMessage"] {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: var(--radius-md) !important;
+    padding: 16px 20px !important;
+    margin-bottom: 10px !important;
+    box-shadow: var(--shadow-card) !important;
+  }
+  div[data-testid="stChatMessage"]:hover { border-color: var(--border-accent) !important; }
+
+  /* ═══════════════════════════════════════════════════
+     PLOTLY CHARTS
+  ═══════════════════════════════════════════════════ */
+  div[data-testid="stPlotlyChart"] {
+    border-radius: var(--radius-md) !important;
+    overflow: hidden;
+    border: 1px solid var(--border-subtle) !important;
+    box-shadow: var(--shadow-card) !important;
+    background: var(--bg-card) !important;
+  }
+  div[data-testid="stPlotlyChart"]:hover {
+    border-color: var(--border-accent) !important;
+    box-shadow: var(--shadow-hover) !important;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     MARKDOWN
+  ═══════════════════════════════════════════════════ */
+  .stMarkdown p, .stMarkdown li { color: var(--text-secondary) !important; font-size: 13.5px !important; }
+  .stMarkdown strong { color: var(--text-primary) !important; font-weight: 600 !important; }
+  .stMarkdown a { color: var(--gold) !important; text-decoration: none; border-bottom: 1px solid rgba(226,185,111,0.3); }
+  .stMarkdown a:hover { color: var(--gold-light) !important; }
+  .stMarkdown code {
+    background: rgba(226,185,111,0.1) !important;
+    color: var(--gold-light) !important;
+    padding: 2px 7px !important;
+    border-radius: 4px !important;
+    font-size: 12.5px !important;
+    border: 1px solid rgba(226,185,111,0.18) !important;
+  }
+  .stMarkdown h4 {
+    font-family: var(--font-body) !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    letter-spacing: 1px !important;
+    text-transform: uppercase !important;
+    color: var(--text-muted) !important;
+    margin-bottom: 12px !important;
+  }
+
+  hr { border: none !important; border-top: 1px solid var(--border-subtle) !important; margin: 1.5rem 0 !important; }
+  small, .stMarkdown small { color: var(--text-muted) !important; font-size: 11.5px !important; }
+
+  /* ═══════════════════════════════════════════════════
+     PAGE-LOAD ANIMATION
+  ═══════════════════════════════════════════════════ */
+  .block-container { animation: fadeUp 0.5s ease both; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 </style>
 """, unsafe_allow_html=True)
@@ -74,6 +543,57 @@ def get_groq_client():
     return Groq(api_key=api_key)
 
 GROQ_MODEL = "llama-3.3-70b-versatile"
+
+# ── Context token budget ───────────────────────────────────────────────────────
+# Groq's llama-3.3-70b context window is 32 768 tokens.
+# We reserve ~1 000 for the system prompt + question and ~600 for the reply,
+# leaving ≈ 2 000 characters of catalog data (very conservative; 1 char ≈ 0.3 tokens).
+MAX_CONTEXT_CHARS = 6_000   # ~2 000 tokens — safe for any Groq free-tier model
+
+
+def build_chat_context(df: pd.DataFrame | None) -> str:
+    """
+    Build a compact, token-safe context string from the studies dataframe.
+
+    Strategy:
+      1. If no dataframe, return a static fallback string.
+      2. Otherwise emit a schema summary + up to 30 rows of key columns only,
+         then truncate the whole string to MAX_CONTEXT_CHARS.
+    """
+    if df is None:
+        return (
+            "No CSV uploaded yet. Use general knowledge about Rwanda gender data "
+            "from NISR, MIGEPROF, BNR, REB, and UNFPA sources."
+        )
+
+    # Pick only the most informative columns to reduce token cost
+    preferred_cols = ["title", "organization", "org", "publisher",
+                      "year", "abstract", "summary", "description",
+                      "quality_flags", "url"]
+    keep = [c for c in preferred_cols if c in df.columns] or list(df.columns[:6])
+
+    # Take at most 30 rows and convert to a readable list format
+    subset = df[keep].head(30)
+    lines = [f"Columns: {', '.join(keep)}", "---"]
+    for i, (_, row) in enumerate(subset.iterrows(), 1):
+        parts = []
+        for col in keep:
+            val = row.get(col, "")
+            if pd.notna(val) and str(val).strip():
+                # Truncate very long fields (e.g. abstracts) per cell
+                cell = str(val).strip()
+                if col in ("abstract", "summary", "description") and len(cell) > 200:
+                    cell = cell[:200] + "…"
+                parts.append(f"{col}: {cell}")
+        lines.append(f"[{i}] " + " | ".join(parts))
+
+    context = "\n".join(lines)
+
+    # Hard cap — never exceed the budget regardless of dataframe size
+    if len(context) > MAX_CONTEXT_CHARS:
+        context = context[:MAX_CONTEXT_CHARS] + "\n…[truncated for length]"
+
+    return context
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -148,7 +668,12 @@ def stream_policy_brief(context: str, district: str, sector: str):
 
 
 def stream_chat_answer(question: str, df_context: str):
-    """Stream a chat answer using Groq."""
+    """
+    Stream a chat answer using Groq.
+
+    df_context must already be a compact, token-safe string
+    produced by build_chat_context() — never a raw dataframe dump.
+    """
     client = get_groq_client()
     if client is None:
         yield "⚠️ GROQ_API_KEY not found in .env file. Please add it and restart."
@@ -224,6 +749,10 @@ df_studies   = normalise(load_csv(studies_file))        if studies_file        e
 df_resources = normalise(load_csv(resources_file))      if resources_file      else None
 df_quality   = normalise(load_csv(quality_report_file)) if quality_report_file else None
 
+# ── Build the safe context string ONCE (used in Tab 4) ───────────────────────
+# ✅ FIX: replaces the raw df.to_string() call that caused the 400 error
+chat_context = build_chat_context(df_studies)
+
 
 # ── Tabs ──────────────────────────────────────────────────────────────────────
 tab1, tab2, tab3, tab4 = st.tabs([
@@ -254,6 +783,11 @@ with tab1:
     title_col = get_col(df_studies, "title")
     org_col   = get_col(df_studies, "organization", "org", "publisher")
     year_col  = get_col(df_studies, "year")
+
+    # Force year column to numeric to fix slider type errors
+    if year_col:
+        df_studies[year_col] = pd.to_numeric(df_studies[year_col], errors="coerce")
+
     url_col   = get_col(df_studies, "url")
     qf_col    = get_col(df_studies, "quality_flags")
     abs_col   = get_col(df_studies, "abstract", "summary", "description")
@@ -551,14 +1085,8 @@ with tab4:
         "The assistant is aware of all loaded resources."
     )
 
-    # Build context summary
-    if df_studies is not None:
-        context_summary = df_studies.to_string(max_rows=20, max_cols=6)
-    else:
-        context_summary = (
-            "No CSV uploaded yet. I have general knowledge about Rwanda gender data "
-            "from NISR, MIGEPROF, and BNR sources."
-        )
+    # ✅ FIX: use the pre-built, token-safe context string instead of df.to_string()
+    # chat_context was built above with build_chat_context(df_studies)
 
     # Initialise chat history
     if "messages" not in st.session_state:
@@ -589,7 +1117,8 @@ with tab4:
         with st.chat_message("assistant"):
             reply_placeholder = st.empty()
             full_reply = ""
-            for chunk in stream_chat_answer(prompt, context_summary):
+            # ✅ FIX: pass chat_context (safe string) not df.to_string()
+            for chunk in stream_chat_answer(prompt, chat_context):
                 full_reply += chunk
                 reply_placeholder.markdown(full_reply)
 
